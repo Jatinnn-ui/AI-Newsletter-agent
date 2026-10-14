@@ -164,6 +164,10 @@ summary {
   color: var(--text-primary);
   transition: border-color var(--duration) ease, box-shadow var(--duration) ease;
 }
+/* Input with a leading icon: leave room so the icon never overlaps the text/placeholder. */
+.field-icon {
+  padding-left: 2.25rem;
+}
 .field::placeholder {
   color: var(--text-muted);
 }

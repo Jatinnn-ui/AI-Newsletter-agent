@@ -96,7 +96,7 @@ export function HistoryPage() {
           <label htmlFor="history-search" className="sr-only">
             Search by goal or subject
           </label>
-          <input id="history-search" type="search" value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search goal or subject" className="field h-9 pl-9 text-[13px]" />
+          <input id="history-search" type="search" value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search goal or subject" className="field field-icon h-9 text-[13px]" />
         </div>
         <FilterSelect id="f-status" label="Filter by status" value={status} onChange={setStatus} options={Object.entries(STATUS_LABELS) as [StatusFilter, string][]} />
         <FilterSelect

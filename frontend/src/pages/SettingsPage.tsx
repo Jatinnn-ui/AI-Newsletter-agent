@@ -116,7 +116,7 @@ function AccessToken() {
         </label>
         <div className="relative flex-1">
           <KeyRound size={14} className="pointer-events-none absolute top-1/2 left-3 -translate-y-1/2 text-fg-3" aria-hidden />
-          <input id="token" type="password" autoComplete="off" value={value} onChange={(e) => setValue(e.target.value)} placeholder={hasToken ? "Token set for this session" : "Paste the API_AUTH_TOKEN value"} className="field h-9 pl-9" />
+          <input id="token" type="password" autoComplete="off" value={value} onChange={(e) => setValue(e.target.value)} placeholder={hasToken ? "Token set for this session" : "Paste the API_AUTH_TOKEN value"} className="field field-icon h-9" />
         </div>
         <Button type="submit" variant="primary" disabled={!value.trim()}>
           Save
