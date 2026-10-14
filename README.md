@@ -1,16 +1,71 @@
-# Newsletter Agent
+<div align="center">
 
-An autonomous AI agent that turns a plain-English goal such as
+# 📰 Newsletter Agent
 
-> "Create a weekly newsletter on the latest AI agent news and send it to our subscribers."
+**An autonomous AI agent that turns one plain-English goal into a researched, self-reviewed newsletter.**
 
-into a researched, summarized, self-reviewed newsletter (HTML + Markdown). It plans the work, searches real news with Tavily, retrieves and normalizes articles, ranks and deduplicates them, summarizes with Google Gemini, critiques its own draft against explicit quality checks, revises (max 2 automatic revisions), and saves the result. **Delivery is simulated**: files are saved and the subject/content are displayed; no email is sent.
+Plan → research the live web → summarize → write → critique its own draft → revise → deliver.
 
-It runs **Fully Autonomous** or **Human-in-the-Loop** (pauses for you to approve the article selection and the draft).
+![Python](https://img.shields.io/badge/Python-3.11+-3776AB?logo=python&logoColor=white)
+![LangGraph](https://img.shields.io/badge/LangGraph-pure-1C3C3C?logo=langchain&logoColor=white)
+![Gemini](https://img.shields.io/badge/Google-Gemini-8E75FF?logo=googlegemini&logoColor=white)
+![FastAPI](https://img.shields.io/badge/FastAPI-009688?logo=fastapi&logoColor=white)
+![React](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=black)
+![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?logo=typescript&logoColor=white)
+![Tests](https://img.shields.io/badge/tests-86%20passing-A78BFA)
 
-> New to the project? Start with **[SUBMISSION.md](SUBMISSION.md)** for the assignment checklist and the fastest no-keys run.
+</div>
 
-The frontend is a preview-first editorial workspace: a dark charcoal shell with a restrained lavender accent, a compact horizontal workflow strip, the generated newsletter as the focal surface, and a narrow review/activity rail. It is fully responsive (verified from 320 px phones to desktop).
+> **Goal in → newsletter out:**
+> _"Create a weekly newsletter on the latest AI agent news and send it to our subscribers."_
+
+The agent plans the work, searches real news with **Tavily**, retrieves and normalizes articles, ranks and deduplicates them, summarizes with **Google Gemini**, critiques its own draft against 10 explicit quality checks, revises when needed (bounded), and saves HTML + Markdown. **Delivery is simulated** — files are saved and the subject/content are shown; no email is sent (exactly as the assignment allows).
+
+It runs **Fully Autonomous** (one call does everything) or **Human-in-the-Loop** (pauses for you to approve the article selection and the draft). A single call —
+`run_newsletter_agent(goal)` — does the full job.
+
+![Newsletter Agent workspace](docs/screenshots/completed-run.png)
+
+> 🧭 **Reviewing this for the assignment?** Jump to **[SUBMISSION.md](SUBMISSION.md)** for the requirement-by-requirement checklist and the fastest no-keys run.
+
+### How this maps to the assignment
+
+| Assignment requirement | How it's met |
+| --- | --- |
+| Plain-English goal input | `run_newsletter_agent(goal)` + the goal composer in the UI |
+| Research latest AI agent news | Tavily web search → article retrieval & normalization |
+| Summarize top 5–7 articles | Gemini summarization (configurable 3–7, default 5) |
+| Clean newsletter (HTML / Markdown) | Email-safe HTML **and** Markdown, both validated |
+| Simulate sending | Saved to files + subject/content shown; "no email sent" everywhere |
+| Multi-step reasoning | LangGraph: plan → research → summarize → write → review → revise → output |
+| Tool use (2–3+) | web search, article retrieval, newsletter renderer/storage, Gemini calls |
+| Self-reflection / critique | Rules + LLM critic with a bounded revision loop that improves the draft |
+| One-call autonomy | `run_newsletter_agent(goal)` runs the whole pipeline |
+| Autonomous ⇄ Human-in-the-Loop toggle | `ExecutionMode` with two human approval gates |
+| Clean, structured code | Layered `tools / agent / nodes / services / api`, fully typed, 86 tests |
+| Simple frontend | Responsive React + TypeScript + Tailwind workspace |
+
+The frontend is a preview-first editorial workspace: a dark charcoal shell with a restrained lavender accent, a compact horizontal workflow strip, the generated newsletter as the focal surface, and a narrow review/activity rail. Fully responsive (verified from 320 px phones to desktop).
+
+## Quickstart (no API keys needed)
+
+Runs in **deterministic demo mode** on labelled fixture data — great for a first look.
+
+```bash
+# Backend
+cd backend
+python -m venv .venv && .venv\Scripts\Activate.ps1   # macOS/Linux: source .venv/bin/activate
+pip install -r requirements-dev.txt
+
+python -m app.cli --deterministic                     # one autonomous run → prints subject + Markdown
+python -m app.cli --deterministic --mode hitl         # Human-in-the-Loop → asks you to approve
+
+# Full UI
+uvicorn app.main:app --reload --port 8000             # terminal 1
+cd ../frontend && npm install && npm run dev          # terminal 2 → http://127.0.0.1:5173
+```
+
+For **live** research, add `GEMINI_API_KEY` and `TAVILY_API_KEY` to `backend/.env` (see `.env.example`). Without keys the app still runs; the UI switches to demo mode automatically.
 
 ## Features
 
