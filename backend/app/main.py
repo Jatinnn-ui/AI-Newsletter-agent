@@ -28,9 +28,11 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name
 
 def create_app(settings: Settings | None = None, manager: RunManager | None = None) -> FastAPI:
     settings = settings or get_settings()
+    # Auth is optional: if API_AUTH_TOKEN is unset, the API is open (auth_required=false)
+    # and no token prompt is shown. Set a token to protect the API again.
     if settings.app_env == "production" and not settings.api_auth_token:
-        raise RuntimeError(
-            "API_AUTH_TOKEN is required when APP_ENV=production. Generate a strong token and configure it before starting."
+        logging.getLogger("app").warning(
+            "APP_ENV=production without API_AUTH_TOKEN: the API is UNPROTECTED. Anyone with the URL can start runs and spend your LLM/search quota. Set API_AUTH_TOKEN to re-enable auth."
         )
 
     @asynccontextmanager
