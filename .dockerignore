@@ -1,0 +1,19 @@
+# Build context is the repo root. Only backend/app is needed for the image.
+.git
+.github
+.venv
+backend/.venv
+**/__pycache__
+**/.pytest_cache
+backend/output
+backend/data
+backend/tests
+**/.env
+**/*.sqlite*
+
+# Not needed for the backend image
+frontend
+scripts
+docs
+*.pdf
+*.md
