@@ -4,7 +4,10 @@ WORKDIR /app
 COPY package.json package-lock.json ./
 RUN npm ci --no-audit --no-fund
 COPY . .
-ARG VITE_API_URL=http://127.0.0.1:8000
+# Primary var is VITE_API_BASE_URL; VITE_API_URL is kept as a fallback.
+ARG VITE_API_BASE_URL=http://127.0.0.1:8000
+ARG VITE_API_URL=$VITE_API_BASE_URL
+ENV VITE_API_BASE_URL=$VITE_API_BASE_URL
 ENV VITE_API_URL=$VITE_API_URL
 RUN npm run build
 
