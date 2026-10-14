@@ -7,11 +7,16 @@ from __future__ import annotations
 
 import logging
 from contextlib import asynccontextmanager
+from pathlib import Path
 
 from fastapi import FastAPI, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
+from fastapi.responses import FileResponse, JSONResponse
+from fastapi.staticfiles import StaticFiles
+
+# Static frontend build, if bundled into the image (combined backend+frontend deploy).
+STATIC_DIR = Path(__file__).resolve().parent / "static"
 
 from app import __version__
 from app.api.routes import protected, router
@@ -84,9 +89,31 @@ def create_app(settings: Settings | None = None, manager: RunManager | None = No
     app.include_router(router)
     app.include_router(protected)
 
-    @app.get("/", include_in_schema=False)
-    def root():
-        return {"name": "Newsletter Agent API", "docs": "/docs", "health": "/api/health"}
+    index_file = STATIC_DIR / "index.html"
+    frontend_bundled = index_file.is_file()
+
+    if not frontend_bundled:
+        @app.get("/", include_in_schema=False)
+        def root():
+            return {"name": "Newsletter Agent API", "docs": "/docs", "health": "/api/health"}
+    else:
+        # Serve hashed build assets with long-lived caching.
+        assets_dir = STATIC_DIR / "assets"
+        if assets_dir.is_dir():
+            app.mount("/assets", StaticFiles(directory=assets_dir), name="assets")
+
+        @app.get("/", include_in_schema=False)
+        def spa_root():
+            return FileResponse(index_file)
+
+        # SPA fallback: any non-API path returns index.html so client-side routing works.
+        @app.get("/{full_path:path}", include_in_schema=False)
+        def spa_fallback(full_path: str):
+            candidate = (STATIC_DIR / full_path).resolve()
+            # Only serve files that actually live inside the static dir (no traversal).
+            if STATIC_DIR in candidate.parents and candidate.is_file():
+                return FileResponse(candidate)
+            return FileResponse(index_file)
 
     return app
 

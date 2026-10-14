@@ -1,3 +1,21 @@
+# Combined image: build the React frontend, then serve it from the FastAPI
+# backend. One container, one port (8000), one URL. Build context = repo root.
+
+# --- Stage 1: build the frontend static assets ---------------------------
+FROM node:24-alpine AS frontend
+WORKDIR /fe
+COPY frontend/package.json frontend/package-lock.json ./
+RUN npm ci --no-audit --no-fund
+COPY frontend/ ./
+# Same-origin in the combined deploy: the frontend calls the backend on the
+# same host, so the API base URL is empty (relative paths).
+ARG VITE_API_BASE_URL=""
+ARG VITE_API_URL=""
+ENV VITE_API_BASE_URL=$VITE_API_BASE_URL
+ENV VITE_API_URL=$VITE_API_URL
+RUN npm run build
+
+# --- Stage 2: backend + bundled frontend ---------------------------------
 FROM python:3.11-slim
 
 ENV PYTHONDONTWRITEBYTECODE=1 \
@@ -11,6 +29,9 @@ COPY backend/requirements.txt .
 RUN pip install -r requirements.txt
 
 COPY backend/app ./app
+# Bundle the built frontend so FastAPI can serve it from /app/app/static.
+COPY --from=frontend /fe/dist ./app/static
+
 RUN useradd --create-home appuser && mkdir -p /data && chown appuser /data
 USER appuser
 
