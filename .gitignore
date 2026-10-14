@@ -1,0 +1,37 @@
+# Secrets
+.env
+.env.*
+!.env.example
+*.pem
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+*.egg-info/
+
+# Generated output and runtime state
+backend/output/
+backend/data/
+*.sqlite
+*.sqlite-wal
+*.sqlite-shm
+
+# Frontend / scripts
+frontend/node_modules/
+scripts/node_modules/
+frontend/dist/
+*.tsbuildinfo
+
+# OS / editors
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Assignment brief (reference only, not part of the deliverable)
+*.pdf

@@ -1,0 +1,12 @@
+{
+  "name": "newsletter-agent-scripts",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "screenshots": "node capture-screenshots.mjs",
+    "e2e": "node ui-e2e.mjs"
+  },
+  "devDependencies": {
+    "puppeteer-core": "25.13.0"
+  }
+}

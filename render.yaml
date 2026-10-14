@@ -1,0 +1,36 @@
+# Render Blueprint for the backend. Secrets (GEMINI_API_KEY, TAVILY_API_KEY) are
+# marked sync:false so you enter them in the Render dashboard, never in Git.
+services:
+  - type: web
+    name: newsletter-agent-api
+    runtime: python
+    rootDir: backend
+    plan: starter            # a persistent disk requires a paid instance
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT --proxy-headers
+    healthCheckPath: /api/health
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.9
+      - key: APP_ENV
+        value: production
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: TAVILY_API_KEY
+        sync: false
+      - key: API_AUTH_TOKEN
+        generateValue: true   # Render generates a random token; copy it into the UI Settings
+      - key: GEMINI_MODEL
+        value: gemini-2.5-flash
+      - key: CORS_ORIGINS
+        sync: false          # e.g. https://your-app.vercel.app
+      - key: OUTPUT_DIR
+        value: /var/data/output
+      - key: DATA_DIR
+        value: /var/data/state
+      - key: MAX_CONCURRENT_RUNS
+        value: "2"
+    disk:
+      name: newsletter-data
+      mountPath: /var/data
+      sizeGB: 1
