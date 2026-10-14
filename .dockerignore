@@ -1,19 +1,21 @@
-# Build context is the repo root. Only backend/app is needed for the image.
+# Shared build context (repo root) for both Dockerfile (backend) and
+# Dockerfile.frontend (frontend). Exclude only heavy/secret/irrelevant paths;
+# keep source so each image can COPY what it needs.
 .git
 .github
 .venv
 backend/.venv
-**/__pycache__
-**/.pytest_cache
 backend/output
 backend/data
 backend/tests
-**/.env
-**/*.sqlite*
-
-# Not needed for the backend image
-frontend
-scripts
+frontend/node_modules
+frontend/dist
+scripts/node_modules
 docs
+**/__pycache__
+**/.pytest_cache
+**/.env
+**/.env.*
+**/*.sqlite*
 *.pdf
-*.md
+build-fe.log
