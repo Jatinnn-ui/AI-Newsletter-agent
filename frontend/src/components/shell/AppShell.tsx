@@ -6,6 +6,7 @@ import { cx } from "../ui/cx";
 import { ConnectionDot } from "./ConnectionStatus";
 import { LogoMark } from "./Logo";
 import { Sidebar } from "./Sidebar";
+import { TokenGateModal } from "./TokenGateModal";
 
 export function AppShell({ children }: { children: ReactNode }) {
   const { prefs, update } = usePreferences();
@@ -94,6 +95,8 @@ export function AppShell({ children }: { children: ReactNode }) {
           {children}
         </main>
       </div>
+
+      <TokenGateModal />
     </div>
   );
 }
